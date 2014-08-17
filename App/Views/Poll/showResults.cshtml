@@ -1,0 +1,43 @@
+﻿@model App.Models.PollVoteModel
+@{
+    ViewBag.Title = "Poll resultaten";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    int barWidth = 250;
+}
+@functions{
+    public string getSuffix(int votes)
+    {
+        if (votes == 0 || votes > 1)
+            return "stemmen";
+        return "stem";
+    }
+}
+
+
+<h2>@Model.poll.Question </h2>
+
+<ul id="poll">
+    @foreach (var answer in Model.poll.Answers.OrderBy(a => a.Answer))
+    {
+        decimal perc = 0;
+        if (Model.poll.PollVotes.Count != 0)
+        {
+             perc = ((decimal)answer.PollVotes.Count / (decimal)Model.poll.PollVotes.Count);
+        }
+
+        decimal bar = barWidth * perc;
+        decimal totalBar = barWidth - bar;
+
+    <li class="@if (Model.selectedID == answer.ID) {<text>bold</text>}">
+             <p>@answer.Answer</p>
+        <div class="resultBar"><div class="voteCount">@answer.PollVotes.Count @getSuffix(@answer.PollVotes.Count)</div><img src="~/Images/PollUserVotes.jpg" width=@bar height="20" /><img src="~/Images/PollTotalVotes.jpg" height="20" width=@totalBar /></div>
+    </li>
+
+    }
+</ul>
+@if (Model.selectedID == 0)
+{
+    @Html.ActionLink("Stem uitbrengen", "showPoll", new { guid = Model.poll.GUID }, new { @id = "btnNew" })<br /><br />
+}
+Totaal aantal stemmen: @Model.poll.PollVotes.Count
+

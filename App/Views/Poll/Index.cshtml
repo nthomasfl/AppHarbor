@@ -1,0 +1,54 @@
+﻿@model IList<Business.Entities.PollQuestion>
+
+@{
+    ViewBag.Title = "Mijn Polls";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@functions{
+    public string YesNo(bool active)
+    {
+        if (active)
+            return "Ja";
+        return "Nee";
+    }
+}
+
+
+
+<h2>@ViewBag.Title</h2>
+@if (Model.Count == 0)
+{
+    <p>Nog geen polls aangemaakt.</p>
+}
+else
+{
+
+    <table class="pollsOverview">
+        <thead>
+            <tr><th>@Html.ActionLink("Naam", "Index", new { sortOrder = ViewBag.NameSort })</th><th>@Html.ActionLink("Aangemaakt", "Index", new { sortOrder = ViewBag.DateSort })</th><th>Actief</th><th>Publiek</th></tr>
+        </thead>
+
+        @foreach (var poll in Model)
+        {
+            <tr>
+                <td class="pollQuestion">@Html.ActionLink(poll.Question, "showPoll", "Poll", new { guid = poll.GUID }, null)</td><td>@poll.CreateDate.ToString("dd-MM-yyyy")</td><td>@using (Html.BeginForm("setActiveInactive", "Poll", new { guid = poll.GUID }, FormMethod.Post)) 
+                {
+                    @Html.AntiForgeryToken()
+                    <input type="submit" value="@YesNo(poll.Active)" />
+                }
+                </td><td>
+                @using (Html.BeginForm("setPublicPrivate", "Poll", new { guid = poll.GUID }, FormMethod.Post))
+                {
+                     @Html.AntiForgeryToken()
+                    <input type="submit" value="@YesNo(poll.Public)" />
+                }
+                </td>
+            </tr>
+        }   
+    </table>
+
+}
+
+<br />
+@Html.ActionLink("Nieuwe poll", "Create", "Poll", null, new { @id="btnNew"})

@@ -1,0 +1,32 @@
+﻿@model App.Models.PollVoteModel
+@{
+    ViewBag.Title = "Poll";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+   
+}
+@functions{
+    public string getSuffix(int votes)
+    {
+        if (votes == 0 || votes >1) 
+            return "stemmen";
+        return "stem";
+    }
+}
+
+
+<h2>@Model.poll.Question </h2>
+
+@using (Html.BeginForm())
+{   
+            <ul id="poll">
+                @foreach (var answer in Model.poll.Answers.OrderBy(a => a.Answer))
+                {
+                    <li>@Html.RadioButtonFor(p => p.selectedID, answer.ID) @answer.Answer</li>
+                }
+            </ul>
+             @Html.ActionLink("Resultaten", "showResults", new { guid = Model.poll.GUID }, new { @id = "btnNew" }) <input type="submit" value="Stemmen!" />
+}
+
+
+Totaal aantal stemmen: @Model.poll.PollVotes.Count
+

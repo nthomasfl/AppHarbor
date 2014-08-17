@@ -1,0 +1,41 @@
+﻿@model PagedList.IPagedList<Business.Entities.PollQuestion>
+@using PagedList.Mvc;
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+@{
+    ViewBag.Title = "Overzicht polls";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>@ViewBag.Title</h2>
+@if (Model.Count() != 0) {
+<table style="width:100%">
+    <thead>
+        <tr>
+            <th>@Html.ActionLink("Naam", "IndexAdmin", new { sortOrder = ViewBag.NameSort })</th>
+            <th>@Html.ActionLink("Aantal stemmen", "IndexAdmin", new { sortOrder = ViewBag.VoteSort })</th>
+        </tr>
+    </thead>
+    <tbody>
+      
+            @foreach (var poll in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.ActionLink(poll.Question, "showPollAdmin", "Poll", new { guid = poll.GUID }, null)
+                    </td>
+                    <td>
+                        @poll.PollVotes.Count
+                    </td>
+                </tr>
+            }
+       
+    </tbody>
+</table>
+    <br /><br />
+     <text>Pagina</text>  @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) <text>van</text> @Model.PageCount
+    @Html.PagedListPager(Model, page => Url.Action("IndexAdmin",    new { page })) 
+}
+else
+{
+    <p>Er werden nog geen polls aangemaakt.</p>
+}

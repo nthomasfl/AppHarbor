@@ -1,0 +1,59 @@
+﻿@model App.Models.PollVoteAdminModel
+@using Business.Entities.DAL
+@{
+    ViewBag.Title = "Poll";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    int barWidth = 250;
+    var userRepository = new UserRepository(new UserContext());
+    var anonCount = 0;
+}
+@functions{
+    public string getSuffix(int votes)
+    {
+        if (votes == 0 || votes > 1)
+            return "stemmen";
+        return "stem";
+    }
+}
+
+<h2>@Model.poll.Question </h2>
+<p>Aangemaakt door: @userRepository.GetUserByID(Model.poll.UserID).UserName</p>
+
+        <ul id="poll">
+            @foreach (var answer in Model.poll.Answers.OrderBy(a => a.Answer))
+            {
+                decimal perc = 0;
+                if (Model.poll.PollVotes.Count != 0)
+                {
+                    perc = ((decimal)answer.PollVotes.Count / (decimal)Model.poll.PollVotes.Count);
+                }
+                decimal bar = barWidth * perc;
+                decimal totalBar = barWidth - bar;
+
+                <li>
+                    @answer.Answer
+                <div class="resultBar"><div class="voteCount">@answer.PollVotes.Count @getSuffix(@answer.PollVotes.Count)</div><img src="~/Images/PollUserVotes.jpg" width="@bar" height="20" /><img src="~/Images/PollTotalVotes.jpg" height="20" width="@totalBar" /></div>
+            </li>
+            }
+        </ul>
+Totaal aantal stemmen: @Model.poll.PollVotes.Count<br /><br />
+@Html.ActionLink("Naar poll", "showPoll", "Poll", new { guid=Model.poll.GUID }, new { @id = "btnNew" })
+<h2>Stemmen</h2>
+<ul id="poll">
+    @foreach (var vote in Model.poll.PollVotes)
+    {
+        if (vote.UserId != -1) { 
+             <li>@userRepository.GetUserByID(vote.UserId).UserName</li>
+        }
+        else {
+            anonCount++;
+        }
+       
+    }
+    @if (Model.poll.PollVotes.Count != 0) {
+    <li>@anonCount niet geregistreerde gebruiker(s).</li>
+    }
+    else { 
+        <p>Er werden nog geen stemmen uitgebracht.</p>
+    }
+</ul>

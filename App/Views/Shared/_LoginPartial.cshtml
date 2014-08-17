@@ -1,0 +1,23 @@
+﻿@if (Request.IsAuthenticated) {
+    <text>
+        Hallo, @Html.ActionLink(User.Identity.Name, "Manage", "Account", new { area = "" }, htmlAttributes: new { @class = "username", title = "Manage" })!
+        @Html.ActionLink("Mijn polls", "Index", "Poll", new { area = "" }, null)        
+    
+        @if (ViewContext.HttpContext.User.IsInRole("Admin"))
+        {
+              @Html.ActionLink("Overzicht polls", "IndexAdmin", "Poll", new { area = "" }, null)
+             @Html.ActionLink("Overzicht gebruikers", "usersAdmin", "Poll", new { area = "" }, null)
+        }
+      
+        
+        @using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm" })) {
+            @Html.AntiForgeryToken()
+            <a href="javascript:document.getElementById('logoutForm').submit()">Uitloggen</a>
+        }
+    </text>
+} else {
+    <ul>
+        <li>@Html.ActionLink("Registeren", "Register", "Account", new { area = "" }, htmlAttributes: new { id = "registerLink" })</li>
+        <li>@Html.ActionLink("Inloggen", "Login", "Account", new { area = "" }, htmlAttributes: new { id = "loginLink" })</li>
+    </ul>
+}
